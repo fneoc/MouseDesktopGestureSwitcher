@@ -1,0 +1,23 @@
+# Local installers and generated binaries
+AutoHotkey*_setup.exe
+*.msi
+
+# Local shortcuts and startup artifacts
+*.lnk
+*.lnk.disabled
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*.old
+
+# Editor and OS files
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+
+# Local working folders
+work/
+outputs/
