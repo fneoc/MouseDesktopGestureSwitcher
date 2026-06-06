@@ -33,13 +33,17 @@ MouseDesktopMoveWindow_MiddleDrag.ahk
 
 ## Requirements
 
-- Windows 10 or Windows 11 with virtual desktops enabled.
+- Windows 10 with virtual desktops enabled is the default supported target for
+  the bundled `VirtualDesktopAccessor.dll`.
+- Windows 11 may also work, but it is more sensitive to the Windows build and
+  may require replacing `VirtualDesktopAccessor.dll` with a compatible release.
 - [AutoHotkey v2](https://www.autohotkey.com/download/).
 - `VirtualDesktopAccessor.dll` in the same directory as the script.
 
 `VirtualDesktopAccessor.dll` must match your Windows build. If desktop switching
-or window movement fails after a Windows update, download a compatible release
-from [Ciantic/VirtualDesktopAccessor](https://github.com/Ciantic/VirtualDesktopAccessor/releases).
+or window movement fails after a Windows update, especially on Windows 11,
+download a compatible release from
+[Ciantic/VirtualDesktopAccessor](https://github.com/Ciantic/VirtualDesktopAccessor/releases).
 
 ## Usage
 

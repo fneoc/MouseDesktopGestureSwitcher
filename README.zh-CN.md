@@ -25,11 +25,14 @@ MouseDesktopMoveWindow_MiddleDrag.ahk
 
 ## 环境要求
 
-- Windows 10 或 Windows 11，并启用虚拟桌面。
+- 默认支持 Windows 10，并需要启用虚拟桌面；仓库随带的
+  `VirtualDesktopAccessor.dll` 默认按 Windows 10 使用场景提供。
+- Windows 11 也可能可用，但更依赖具体系统版本，可能需要替换为兼容当前
+  Windows 版本的 `VirtualDesktopAccessor.dll`。
 - [AutoHotkey v2](https://www.autohotkey.com/download/)。
 - `VirtualDesktopAccessor.dll` 与脚本放在同一目录。
 
-`VirtualDesktopAccessor.dll` 需要匹配当前 Windows 版本。如果 Windows 更新后出现无法切换桌面或无法移动窗口的问题，请从
+`VirtualDesktopAccessor.dll` 需要匹配当前 Windows 版本。如果 Windows 更新后出现无法切换桌面或无法移动窗口的问题，尤其是 Windows 11，请从
 [Ciantic/VirtualDesktopAccessor](https://github.com/Ciantic/VirtualDesktopAccessor/releases)
 下载兼容版本。
 
