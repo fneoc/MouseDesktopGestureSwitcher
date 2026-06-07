@@ -23,6 +23,7 @@ MouseDesktopMoveWindow_MiddleDrag.ahk
   window to an adjacent virtual desktop.
 - The legacy middle-button + wheel switching script is still included for users
   who prefer the original interaction.
+- Press the left and right mouse buttons together to open Windows Task View.
 - Optional follow mode: after moving a window, switch to the target desktop and
   refocus that window.
 - Compact on-screen HUD for desktop/move feedback.
@@ -54,6 +55,7 @@ download a compatible release from
 4. Use:
    - Middle-button horizontal drag: switch desktop.
    - `Shift` + middle-button horizontal drag: move window to adjacent desktop.
+   - Left + right mouse button chord: open Task View.
    - `Ctrl + Alt + F12`: exit the script.
 
 Do not run multiple scripts from this repository at the same time. They may
@@ -75,6 +77,9 @@ Edit the tunables near the top of `MouseDesktopMoveWindow_MiddleDrag.ahk`.
 | `wrapWindowMoving` | Allow moving windows across the first/last desktop boundary. Disabled by default. |
 | `leftDragMovesToNext` | Controls normal desktop switching direction. Enabled by default to preserve the original switching feel. |
 | `leftDragMovesWindowToPrevious` | Controls `Shift` + middle-drag window moving direction. Enabled by default so dragging left moves a window to the previous desktop. |
+| `taskViewChordEnabled` | Enable the left + right mouse button chord for opening Task View. |
+| `taskViewChordWindowMs` | Maximum time between left/right button presses for the chord to trigger. |
+| `taskViewChordCooldownMs` | Cooldown after opening Task View to avoid repeated triggers while both buttons are held. |
 | `feedbackOpacity` | HUD opacity. |
 | `feedbackMs` | HUD display time. |
 
@@ -114,6 +119,11 @@ that animation path and makes switching feel much faster.
 - The current implementation does not synthesize mouse or keyboard input. It
   observes middle-button drag distance and calls virtual-desktop APIs only after
   the gesture is clear.
+- Task View is opened through Explorer's shell target rather than by sending
+  `Win + Tab`. If this Explorer shell target changes in a future Windows build,
+  disable `taskViewChordEnabled` or use the native shortcut.
+- The left/right mouse chord is pass-through: normal mouse buttons are not
+  blocked. Very slow two-button presses will be ignored.
 - Some elevated, system, pinned, minimized, hidden, or protected windows cannot
   be moved between desktops.
 

@@ -24,6 +24,11 @@ wrapDesktopSwitching := true
 wrapWindowMoving := false
 leftDragMovesToNext := true ; Desktop switching gesture mapping.
 leftDragMovesWindowToPrevious := true ; Window moving gesture mapping.
+taskViewChordEnabled := true
+taskViewChordWindowMs := 180
+taskViewChordCooldownMs := 700
+; Explorer shell namespace entry for Task View. This avoids sending Win+Tab.
+taskViewShellTarget := "shell:::{3080F90E-D7AD-11D9-BD98-0000947B0257}"
 
 ; Load the VDA DLL.
 vdaPath := A_ScriptDir "\VirtualDesktopAccessor.dll"
@@ -53,6 +58,10 @@ gestureTargetHwnd := 0
 gestureOriginX := 0
 gestureOriginY := 0
 lastDesktopSwitch := 0
+lastLeftButtonDown := 0
+lastRightButtonDown := 0
+lastTaskViewChord := 0
+taskViewChordActive := false
 feedbackGui := ""
 feedbackShadowGui := ""
 
@@ -167,6 +176,59 @@ CanSwitchDesktop()
         return false
 
     lastDesktopSwitch := now
+    return true
+}
+
+HandleTaskViewChordDown(button)
+{
+    global taskViewChordEnabled, taskViewChordWindowMs, taskViewChordCooldownMs
+    global lastLeftButtonDown, lastRightButtonDown, lastTaskViewChord
+    global taskViewChordActive
+
+    if !taskViewChordEnabled
+        return
+
+    now := A_TickCount
+    if (button = "L")
+        lastLeftButtonDown := now
+    else
+        lastRightButtonDown := now
+
+    if taskViewChordActive
+        return
+
+    if !GetKeyState("LButton", "P") || !GetKeyState("RButton", "P")
+        return
+
+    if (Abs(lastLeftButtonDown - lastRightButtonDown) > taskViewChordWindowMs)
+        return
+
+    if (now - lastTaskViewChord < taskViewChordCooldownMs)
+        return
+
+    taskViewChordActive := true
+    lastTaskViewChord := now
+    OpenTaskView()
+}
+
+ResetTaskViewChordIfReleased()
+{
+    global taskViewChordActive
+    if !GetKeyState("LButton", "P") || !GetKeyState("RButton", "P")
+        taskViewChordActive := false
+}
+
+OpenTaskView()
+{
+    global taskViewShellTarget
+
+    quote := Chr(34)
+    try Run(quote A_WinDir "\explorer.exe" quote " " taskViewShellTarget, , "Hide")
+    catch {
+        ShowFeedback("任务视图打开失败")
+        return false
+    }
+
     return true
 }
 
@@ -500,6 +562,22 @@ HideFeedback()
 }
 
 ^!F12::ExitApp()
+
+~LButton:: {
+    HandleTaskViewChordDown("L")
+}
+
+~RButton:: {
+    HandleTaskViewChordDown("R")
+}
+
+~LButton Up:: {
+    ResetTaskViewChordIfReleased()
+}
+
+~RButton Up:: {
+    ResetTaskViewChordIfReleased()
+}
 
 ; Native middle-button input is allowed through. The script only observes the
 ; drag distance and calls virtual-desktop APIs when a horizontal gesture is clear.
