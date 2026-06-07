@@ -18,7 +18,7 @@ MouseDesktopMoveWindow_MiddleDrag.ahk
 - 按住鼠标中键左右拖动：切换到相邻虚拟桌面。
 - 按住 `Shift` + 鼠标中键左右拖动：把当前窗口移动到相邻虚拟桌面。
 - 仍保留旧版中键 + 滚轮切换脚本，适合偏好原始交互的用户。
-- 先按住鼠标左键，再按住右键片刻：打开 Windows 任务视图。
+- 同时点击鼠标左键和右键：打开 Windows 任务视图。
 - 可选跟随模式：移动窗口后自动切换到目标桌面，并重新聚焦该窗口。
 - 轻量 HUD 提示：显示当前桌面或窗口移动结果，透明、短时显示，减少打扰。
 - 紧急退出快捷键：`Ctrl + Alt + F12`。
@@ -46,7 +46,7 @@ MouseDesktopMoveWindow_MiddleDrag.ahk
 4. 使用手势：
    - 鼠标中键水平拖动：切换虚拟桌面。
    - `Shift` + 鼠标中键水平拖动：移动窗口到相邻虚拟桌面。
-   - 先按住鼠标左键，再按住右键片刻：打开任务视图。
+   - 鼠标左键 + 右键同时点击：打开任务视图。
    - `Ctrl + Alt + F12`：立即退出脚本。
 
 不要同时运行仓库里的多个脚本。它们会同时监听鼠标中键，可能产生冲突。
@@ -67,10 +67,8 @@ MouseDesktopMoveWindow_MiddleDrag.ahk
 | `wrapWindowMoving` | 移动窗口时是否允许首尾循环，默认关闭。 |
 | `leftDragMovesToNext` | 控制普通切换桌面的方向映射。默认开启，用来保留原来的切换手感。 |
 | `leftDragMovesWindowToPrevious` | 控制 `Shift` + 中键拖动移动窗口的方向映射。默认开启，左拖会把窗口移动到上一个桌面。 |
-| `taskViewChordEnabled` | 是否启用左键先按、再按右键打开任务视图。 |
-| `taskViewChordWindowMs` | 左键按下到右键按下的最大间隔。右键先按不会触发。 |
-| `taskViewChordHoldMs` | 左右键都按住后，还需要保持多久才打开任务视图。 |
-| `taskViewChordMoveTolerancePx` | 确认手势时允许的最大鼠标移动距离，移动过多会取消触发。 |
+| `taskViewChordEnabled` | 是否启用鼠标左键 + 右键同时点击打开任务视图。 |
+| `taskViewChordWindowMs` | 左右键按下间隔小于该时间才认为是同时点击。 |
 | `taskViewChordCooldownMs` | 打开任务视图后的冷却时间，避免按住双键时重复触发。 |
 | `feedbackOpacity` | HUD 透明度。 |
 | `feedbackMs` | HUD 显示时间。 |
@@ -108,8 +106,7 @@ Windows 原生的 `Ctrl + Win + 左/右` 切换会经过 Explorer/Shell 的动�
 - 主脚本只观察鼠标中键拖动距离，并在手势明确后调用虚拟桌面 API，不模拟键盘或鼠标输入。
 - 任务视图通过 Explorer 的 Shell 目标打开，不发送 `Win + Tab`。如果未来 Windows
   版本改变该入口，可关闭 `taskViewChordEnabled` 或使用系统原生快捷键。
-- 左右键手势检测是透传的：脚本不阻止普通鼠标左键/右键。右键先按、左右键间隔过长、
-  或按住时移动鼠标，都会被忽略，以减少误触任务视图。
+- 左右键同时点击检测是透传的：脚本不阻止普通鼠标左键/右键。左右键按得太慢时不会触发。
 - 部分管理员权限窗口、系统窗口、已固定窗口、最小化窗口、隐藏窗口或受保护窗口可能无法移动到其他桌面。
 
 ## 合规说明
