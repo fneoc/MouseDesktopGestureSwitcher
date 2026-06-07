@@ -25,8 +25,10 @@ wrapWindowMoving := false
 leftDragMovesToNext := true ; Desktop switching gesture mapping.
 leftDragMovesWindowToPrevious := true ; Window moving gesture mapping.
 taskViewChordEnabled := true
-taskViewChordWindowMs := 180
-taskViewChordCooldownMs := 700
+taskViewChordWindowMs := 120
+taskViewChordHoldMs := 140
+taskViewChordMoveTolerancePx := 8
+taskViewChordCooldownMs := 800
 ; Explorer shell namespace entry for Task View. This avoids sending Win+Tab.
 taskViewShellTarget := "shell:::{3080F90E-D7AD-11D9-BD98-0000947B0257}"
 
@@ -61,7 +63,11 @@ lastDesktopSwitch := 0
 lastLeftButtonDown := 0
 lastRightButtonDown := 0
 lastTaskViewChord := 0
+taskViewChordCandidate := false
 taskViewChordActive := false
+taskViewChordBothDownAt := 0
+taskViewChordOriginX := 0
+taskViewChordOriginY := 0
 feedbackGui := ""
 feedbackShadowGui := ""
 
@@ -183,7 +189,8 @@ HandleTaskViewChordDown(button)
 {
     global taskViewChordEnabled, taskViewChordWindowMs, taskViewChordCooldownMs
     global lastLeftButtonDown, lastRightButtonDown, lastTaskViewChord
-    global taskViewChordActive
+    global taskViewChordActive, taskViewChordCandidate, taskViewChordBothDownAt
+    global taskViewChordOriginX, taskViewChordOriginY
 
     if !taskViewChordEnabled
         return
@@ -194,28 +201,75 @@ HandleTaskViewChordDown(button)
     else
         lastRightButtonDown := now
 
-    if taskViewChordActive
+    if taskViewChordActive || taskViewChordCandidate
         return
 
     if !GetKeyState("LButton", "P") || !GetKeyState("RButton", "P")
         return
 
-    if (Abs(lastLeftButtonDown - lastRightButtonDown) > taskViewChordWindowMs)
+    ; Require left first. This avoids confusing ordinary right-clicks with Task View.
+    if (lastLeftButtonDown <= 0 || lastRightButtonDown <= lastLeftButtonDown)
+        return
+
+    if (lastRightButtonDown - lastLeftButtonDown > taskViewChordWindowMs)
         return
 
     if (now - lastTaskViewChord < taskViewChordCooldownMs)
         return
 
+    taskViewChordCandidate := true
+    taskViewChordBothDownAt := now
+    MouseGetPos(&taskViewChordOriginX, &taskViewChordOriginY)
+    SetTimer(CheckTaskViewChord, 10)
+}
+
+CheckTaskViewChord()
+{
+    global taskViewChordCandidate, taskViewChordActive, taskViewChordBothDownAt
+    global taskViewChordHoldMs, taskViewChordMoveTolerancePx
+    global taskViewChordOriginX, taskViewChordOriginY, lastTaskViewChord
+
+    if !taskViewChordCandidate {
+        SetTimer(CheckTaskViewChord, 0)
+        return
+    }
+
+    if !GetKeyState("LButton", "P") || !GetKeyState("RButton", "P") {
+        StopTaskViewChordCandidate()
+        return
+    }
+
+    MouseGetPos(&currentX, &currentY)
+    movedTooFar := (Abs(currentX - taskViewChordOriginX) > taskViewChordMoveTolerancePx) || (Abs(currentY - taskViewChordOriginY) > taskViewChordMoveTolerancePx)
+    if movedTooFar {
+        StopTaskViewChordCandidate()
+        return
+    }
+
+    now := A_TickCount
+    if (now - taskViewChordBothDownAt < taskViewChordHoldMs)
+        return
+
+    StopTaskViewChordCandidate()
     taskViewChordActive := true
     lastTaskViewChord := now
     OpenTaskView()
 }
 
+StopTaskViewChordCandidate()
+{
+    global taskViewChordCandidate
+    taskViewChordCandidate := false
+    SetTimer(CheckTaskViewChord, 0)
+}
+
 ResetTaskViewChordIfReleased()
 {
     global taskViewChordActive
-    if !GetKeyState("LButton", "P") || !GetKeyState("RButton", "P")
+    if !GetKeyState("LButton", "P") || !GetKeyState("RButton", "P") {
+        StopTaskViewChordCandidate()
         taskViewChordActive := false
+    }
 }
 
 OpenTaskView()
