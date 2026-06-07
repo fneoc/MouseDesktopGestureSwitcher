@@ -22,7 +22,8 @@ followMovedWindow := true
 focusMovedWindowAfterFollow := true
 wrapDesktopSwitching := true
 wrapWindowMoving := false
-leftDragMovesToNext := true
+leftDragMovesToNext := true ; Desktop switching gesture mapping.
+leftDragMovesWindowToPrevious := true ; Window moving gesture mapping.
 
 ; Load the VDA DLL.
 vdaPath := A_ScriptDir "\VirtualDesktopAccessor.dll"
@@ -138,16 +139,21 @@ GetTargetDesktop(current, direction, count, shouldWrap)
     return target
 }
 
-GetGestureDirection(deltaX, deltaY)
+GetGestureDirection(deltaX, deltaY, mode := "switch")
 {
-    global dragThresholdPx, horizontalDominance, leftDragMovesToNext
+    global dragThresholdPx, horizontalDominance
+    global leftDragMovesToNext, leftDragMovesWindowToPrevious
     absX := Abs(deltaX)
     absY := Abs(deltaY)
 
     if (absX < dragThresholdPx || absX < absY * horizontalDominance)
         return 0
 
-    if leftDragMovesToNext
+    leftDragMeansNext := leftDragMovesToNext
+    if (mode = "move")
+        leftDragMeansNext := !leftDragMovesWindowToPrevious
+
+    if leftDragMeansNext
         return deltaX < 0 ? 1 : -1
 
     return deltaX > 0 ? 1 : -1
@@ -532,7 +538,7 @@ TrackMiddleGesture()
     }
 
     MouseGetPos(&currentX, &currentY)
-    direction := GetGestureDirection(currentX - gestureOriginX, currentY - gestureOriginY)
+    direction := GetGestureDirection(currentX - gestureOriginX, currentY - gestureOriginY, gestureMode)
     if !direction
         return
 

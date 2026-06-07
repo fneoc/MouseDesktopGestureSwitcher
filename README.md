@@ -73,7 +73,8 @@ Edit the tunables near the top of `MouseDesktopMoveWindow_MiddleDrag.ahk`.
 | `focusMovedWindowAfterFollow` | Refocus the moved window after following it. |
 | `wrapDesktopSwitching` | Allow switching from last desktop to first, and first to last. |
 | `wrapWindowMoving` | Allow moving windows across the first/last desktop boundary. Disabled by default. |
-| `leftDragMovesToNext` | Controls drag direction mapping. |
+| `leftDragMovesToNext` | Controls normal desktop switching direction. Enabled by default to preserve the original switching feel. |
+| `leftDragMovesWindowToPrevious` | Controls `Shift` + middle-drag window moving direction. Enabled by default so dragging left moves a window to the previous desktop. |
 | `feedbackOpacity` | HUD opacity. |
 | `feedbackMs` | HUD display time. |
 

@@ -63,7 +63,8 @@ MouseDesktopMoveWindow_MiddleDrag.ahk
 | `focusMovedWindowAfterFollow` | 跟随到目标桌面后是否重新聚焦被移动的窗口。 |
 | `wrapDesktopSwitching` | 切换桌面时是否允许首尾循环。 |
 | `wrapWindowMoving` | 移动窗口时是否允许首尾循环，默认关闭。 |
-| `leftDragMovesToNext` | 控制左右拖动与上一个/下一个桌面的映射关系。 |
+| `leftDragMovesToNext` | 控制普通切换桌面的方向映射。默认开启，用来保留原来的切换手感。 |
+| `leftDragMovesWindowToPrevious` | 控制 `Shift` + 中键拖动移动窗口的方向映射。默认开启，左拖会把窗口移动到上一个桌面。 |
 | `feedbackOpacity` | HUD 透明度。 |
 | `feedbackMs` | HUD 显示时间。 |
 
